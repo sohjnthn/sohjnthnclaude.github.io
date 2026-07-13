@@ -368,6 +368,8 @@
 </head>
 <body>
 
+<audio id="audioPlayer"></audio>
+
 <button class="floating-chat-toggle" id="floatingChatToggle" onclick="toggleFloatingChat()" aria-label="Open Tips Assistant">💬</button>
 
 <div class="floating-chat-box" id="floatingChatBox">
@@ -697,6 +699,34 @@
   function toggleFloatingChat(){
     document.getElementById("floatingChatBox").classList.toggle("active");
   }
+
+  // ---------- Background music: same 4 tracks, same order, looped ----------
+  const trackBase = "https://sohjnthn.github.io/";
+  const tracks = [
+    "MapleStorySEA Unfunded Bishop Gameplay Tips - Mandarin.mp3",
+    "MapleStorySEA Bishop unfunded gameplay tips - English.mp3",
+    "圣光射线.mp3",
+    "Cernium Glow.mp3"
+  ];
+
+  let currentTrack = 0;
+  const player = document.getElementById("audioPlayer");
+
+  function playTrack(index){
+    player.src = trackBase + encodeURIComponent(tracks[index]);
+    player.play().catch(err => {
+      console.log("Audio play blocked by browser until a user click:", err);
+    });
+  }
+
+  player.addEventListener("ended", () => {
+    currentTrack = (currentTrack + 1) % tracks.length;
+    playTrack(currentTrack);
+  });
+
+  document.addEventListener("click", () => {
+    if (player && !player.src) playTrack(currentTrack);
+  }, { once: true });
 
   // Click-to-load YouTube embeds — avoids embed/config errors that can happen
   // when a page loads every iframe eagerly from a file:// or unexpected origin.
