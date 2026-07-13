@@ -5,7 +5,7 @@ For the initially hotlinked search bar, fixed position chatbot, and floating cha
 
 The 4 songs were also initially hotlinked.
 
-Claude informed that the text does not exactly follow the source webpage; and not all related images are displayed for the queries' answers, so requested for all related images to be included.
+Claude informed that the text does not exactly follow the source webpage to avoid plagiarism; and not all related images are displayed for the queries' answers, so requested for all related images to be included.
 
 If necessary, need to provide the entire original webpage's index.html if the AI tool says that some things are not clear.
 
