@@ -253,6 +253,93 @@
   }
   .video-fallback a{color:var(--gold-bright);}
 
+  .assistant-block{
+    max-width:1180px; margin:0 auto; padding:48px 5vw 8px;
+  }
+  .assistant-block .eyebrow{display:block; margin-bottom:14px;}
+  .search-row{display:flex; gap:10px; margin-bottom:16px;}
+  .search-row input{
+    flex:1; padding:12px 14px; font-family:'Source Sans 3',sans-serif; font-size:0.94rem;
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--parchment);
+  }
+  .search-row input::placeholder{color:var(--parchment-dim);}
+  .search-row input:focus{outline:none; border-color:var(--gold);}
+  .search-row button, .chat-input-area button{
+    padding:12px 22px; border:1px solid var(--gold); background:transparent; color:var(--gold-bright);
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase;
+    cursor:pointer; transition:background .2s, color .2s;
+  }
+  .search-row button:hover, .chat-input-area button:hover{background:var(--gold); color:#14201a;}
+  #searchResults{margin-bottom:36px;}
+  .search-result-card{
+    background:var(--bg-panel); border-left:2px solid var(--gold);
+    padding:16px 18px; margin-bottom:12px; font-size:0.92rem; color:#d7d0b6; line-height:1.6;
+  }
+  .search-result-images, .msg-images{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
+  }
+  .search-result-images img, .msg-images img{
+    max-width:130px; height:auto; border:1px solid var(--line);
+  }
+
+  .chatbot-container{
+    background:var(--bg-panel); border:1px solid var(--line);
+    display:flex; flex-direction:column; margin-bottom:40px;
+  }
+  .chatbot-header{
+    padding:14px 18px; font-family:'Cinzel',serif; font-size:1rem; color:var(--gold-bright);
+    border-bottom:1px solid var(--line);
+  }
+  .chat-messages{
+    min-height:220px; max-height:420px; overflow-y:auto;
+    padding:16px 18px; display:flex; flex-direction:column; gap:12px;
+  }
+  .bot-message, .user-message{
+    padding:12px 14px; max-width:85%; line-height:1.55; font-size:0.9rem;
+  }
+  .bot-message{background:var(--bg-panel-2); border:1px solid var(--line); color:var(--parchment);}
+  .user-message{background:rgba(207,164,69,0.14); border:1px solid var(--line); color:var(--gold-bright); margin-left:auto;}
+  .chat-input-area{
+    display:flex; gap:10px; padding:14px 18px; border-top:1px solid var(--line);
+  }
+  .chat-input-area input{
+    flex:1; padding:12px 14px; background:var(--bg-deep); border:1px solid var(--line); color:var(--parchment);
+    font-family:'Source Sans 3',sans-serif; font-size:0.9rem;
+  }
+  .chat-input-area input:focus{outline:none; border-color:var(--gold);}
+
+  /* Floating chat */
+  .floating-chat-toggle{
+    position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%;
+    background:var(--gold); color:#14201a; border:none; font-size:24px; cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,0.4); z-index:9999; display:flex; align-items:center; justify-content:center;
+    transition:transform .2s;
+  }
+  .floating-chat-toggle:hover{transform:scale(1.06);}
+  .floating-chat-box{
+    position:fixed; bottom:92px; right:24px; width:340px; max-width:calc(100vw - 48px); height:440px;
+    background:var(--bg-panel); border:1px solid var(--gold); z-index:9998;
+    display:none; flex-direction:column; overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  }
+  .floating-chat-box.active{display:flex;}
+  .floating-chat-header{
+    background:var(--bg-panel-2); color:var(--gold-bright); padding:12px 16px;
+    font-family:'Cinzel',serif; font-size:0.92rem; display:flex; justify-content:space-between; align-items:center;
+    border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .floating-chat-close{background:none; border:none; color:var(--parchment-dim); font-size:18px; cursor:pointer;}
+  .floating-chat-messages{
+    flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px;
+  }
+  .floating-chat-box .chat-input-area{flex-shrink:0;}
+
+  @media(max-width:600px){
+    .search-row, .chat-input-area{flex-direction:column;}
+    .floating-chat-box{width:300px; height:400px; bottom:82px; right:16px;}
+    .floating-chat-toggle{bottom:16px; right:16px; width:52px; height:52px; font-size:22px;}
+  }
+
   .refs{margin-top:14px;}
   .refs a{
     display:inline-block; font-size:0.82rem; color:var(--parchment-dim);
@@ -280,6 +367,22 @@
 </style>
 </head>
 <body>
+
+<button class="floating-chat-toggle" id="floatingChatToggle" onclick="toggleFloatingChat()" aria-label="Open Tips Assistant">💬</button>
+
+<div class="floating-chat-box" id="floatingChatBox">
+  <div class="floating-chat-header">
+    <span>Tips Assistant</span>
+    <button class="floating-chat-close" onclick="toggleFloatingChat()" aria-label="Close">✕</button>
+  </div>
+  <div id="floatingChatMessages" class="floating-chat-messages">
+    <div class="bot-message">Hello! Ask me about early Mesos farming, gear progression, Maple Union, link skills, or daily bossing.</div>
+  </div>
+  <form class="chat-input-area" onsubmit="event.preventDefault(); sendFloatingMessage();">
+    <input type="text" id="floatingChatInput" placeholder="Ask a question..." autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+</div>
 
 <nav>
   <a class="brand" href="#top">Unfunded<span>·</span>Tips</a>
@@ -317,6 +420,26 @@
   </div>
 </header>
 
+<section class="assistant-block">
+  <span class="eyebrow">Search &amp; Tips Assistant</span>
+  <form class="search-row" id="searchForm" onsubmit="event.preventDefault(); searchTips();">
+    <input type="text" id="searchInput" placeholder="Search MapleStorySEA tips... (e.g. mesos, gear, bossing, union)">
+    <button type="submit">Search</button>
+  </form>
+  <div id="searchResults"></div>
+
+  <div class="chatbot-container">
+    <div class="chatbot-header">MapleStorySEA Tips Assistant</div>
+    <div id="chatMessages" class="chat-messages">
+      <div class="bot-message">Hello! Ask me about early Mesos farming, gear progression, Maple Union, link skills, or daily bossing.</div>
+    </div>
+    <form class="chat-input-area" onsubmit="event.preventDefault(); sendMessage();">
+      <input type="text" id="chatInput" placeholder="Ask a question...">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</section>
+
 <div class="wrap">
   <div class="rail">
     <a class="rail-item on" href="#farming"><span class="num">01</span><span class="txt"><b>Early Farming</b>Mesos without spending any</span></a>
@@ -342,10 +465,10 @@
       <div class="callout">Steady beats fast. Regular farming, consistent extraction, and checking market prices before selling will outperform any shortcut.</div>
 
       <div class="shot-grid">
-        <figure><img src="received_735084553007492.jpeg" alt="Early training map drop farming" loading="lazy"></figure>
-        <figure><img src="alchemy_extraction.jpg" alt="Ardentmill Alchemy extraction screen" loading="lazy"></figure>
-        <figure><img src="boss_mileage.jpg" alt="Boss mileage / Glowing Soul Crystal Mesos rewards" loading="lazy"></figure>
-        <figure><img src="Maple_140626_155808.jpg" alt="Maple Auction listing" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/received_735084553007492.jpeg" alt="Early training map drop farming" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/alchemy_extraction.jpg" alt="Ardentmill Alchemy extraction screen" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/boss_mileage.jpg" alt="Boss mileage / Glowing Soul Crystal Mesos rewards" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/Maple_140626_155808.jpg" alt="Maple Auction listing" loading="lazy"></figure>
       </div>
     </section>
 
@@ -374,10 +497,10 @@
       <p>Maple Union and link skills strengthen every character on the account at once — they're free, permanent, and compound with everything above.</p>
 
       <div class="shot-grid">
-        <figure><img src="FB_IMG_1771654388149.jpg" alt="Mid-term equipment upgrade" loading="lazy"></figure>
-        <figure><img src="FB_IMG_1771654392720.jpg" alt="Root Abyss equipment set" loading="lazy"></figure>
-        <figure><img src="FB_IMG_1773890578891.jpg" alt="Maple Union board" loading="lazy"></figure>
-        <figure><img src="FB_IMG_1773890584328.jpg" alt="Link skill setup" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1771654388149.jpg" alt="Mid-term equipment upgrade" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1771654392720.jpg" alt="Root Abyss equipment set" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1773890578891.jpg" alt="Maple Union board" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1773890584328.jpg" alt="Link skill setup" loading="lazy"></figure>
       </div>
     </section>
 
@@ -419,11 +542,11 @@
       <div class="callout">Lower-tier bosses still pay out reliably. Prioritise routine completion over chasing difficulty before your damage range is ready.</div>
 
       <div class="shot-grid">
-        <figure><img src="FB_IMG_1775036218395.jpg" alt="Weekly boss clear" loading="lazy"></figure>
-        <figure><img src="Maple_100526_140123.jpg" alt="Expedition boss fight" loading="lazy"></figure>
-        <figure><img src="Maple_110526_005124.jpg" alt="Boss clear rewards screen" loading="lazy"></figure>
-        <figure><img src="FB_IMG_1778924688621.jpg" alt="Chaos-tier boss encounter" loading="lazy"></figure>
-        <figure><img src="FB_IMG_1777005553625.jpg" alt="Full weekly roster clear summary" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1775036218395.jpg" alt="Weekly boss clear" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/Maple_100526_140123.jpg" alt="Expedition boss fight" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/Maple_110526_005124.jpg" alt="Boss clear rewards screen" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1778924688621.jpg" alt="Chaos-tier boss encounter" loading="lazy"></figure>
+        <figure><img src="https://sohjnthn.github.io/FB_IMG_1777005553625.jpg" alt="Full weekly roster clear summary" loading="lazy"></figure>
       </div>
 
       <h3>Video walkthroughs</h3>
@@ -480,6 +603,100 @@
     });
   }, {rootMargin:'-40% 0px -50% 0px'});
   sections.forEach(s=>obs.observe(s));
+
+  // ---------- Tips Assistant: local keyword matching (no backend, no API key) ----------
+  const tipsDatabase = [
+    {
+      keywords: ["mesos", "farming", "farm", "income", "auction", "ardentmill", "extraction"],
+      answer: "Early Mesos Farming:<br><br>Train on level-appropriate maps with stable mob density. Send unused equipment through Ardentmill extraction rather than the trash chute. Sell item crystals and materials via the Maple Auction, and rely on daily bossing Glowing Soul Crystal drops for steady Mesos.",
+      images: ["received_735084553007492.jpeg", "alchemy_extraction.jpg", "boss_mileage.jpg", "Maple_140626_155808.jpg"]
+    },
+    {
+      keywords: ["gear", "equipment", "arcaneshade", "root abyss", "fensalir"],
+      answer: "Efficient Gear Progression:<br><br>Early-term: Fensalir equipment and expedition boss drops.<br>Mid-term (main character): lv200 Arcaneshade hat, shoes, gloves, cape, shoulder decoration; lv150 Root Abyss top and bottom.<br>Long-term: gradual Mesos-funded upgrades through in-game enhancement systems.",
+      images: ["FB_IMG_1771654388149.jpg", "FB_IMG_1771654392720.jpg"]
+    },
+    {
+      keywords: ["union", "maple union"],
+      answer: "Maple Union:<br><br>Maple Union strengthens every character on the account at once. It's free and permanent, and compounds with your gear and link skill progress.",
+      images: ["FB_IMG_1773890578891.jpg"]
+    },
+    {
+      keywords: ["link", "link skills", "links"],
+      answer: "Link Skills:<br><br>Link skills apply account-wide once unlocked on a character, so building a roster of link-skill characters is one of the most efficient free strength boosts available to an unfunded account.",
+      images: ["FB_IMG_1773890584328.jpg"]
+    },
+    {
+      keywords: ["zakum", "entry", "tier 1"],
+      answer: "Tier 1 — Entry:<br><br>Normal Zakum requires roughly 0.6m–1.0m clean damage range. This is the starting point of the daily bossing ladder.",
+      images: ["FB_IMG_1775036218395.jpg"]
+    },
+    {
+      keywords: ["hilla", "ranmaru", "horntail", "tier 2"],
+      answer: "Tier 2 — Early Expedition:<br><br>Normal Hilla, Normal Ranmaru, and Normal Horntail require roughly 2.0m+ clean damage range.",
+      images: ["Maple_100526_140123.jpg"]
+    },
+    {
+      keywords: ["von bon", "pierre", "crimson queen", "vellum", "tier 3", "6th job"],
+      answer: "Tier 3 — Pre-6th Job:<br><br>Normal Von Bon, Normal Pierre, Normal Crimson Queen, and Normal Vellum require roughly 19.5m+ clean damage range.",
+      images: ["Maple_110526_005124.jpg"]
+    },
+    {
+      keywords: ["boss", "bossing", "expedition", "weekly", "chaos", "tier 4"],
+      answer: "Daily Bossing / Weekly Roster:<br><br>After 6th job, the full weekly roster (Hard Von Leon, Arkarium, Papulatus, Chaos Horntail, Pink Bean, Magnus, and more) needs roughly 19.5m+ clean damage range with a full 5th/6th job rotation. Lower-tier bosses still pay out reliably — prioritise routine completion over chasing difficulty early on.",
+      images: ["FB_IMG_1778924688621.jpg", "FB_IMG_1777005553625.jpg"]
+    }
+  ];
+
+  function findMatch(rawInput){
+    const input = rawInput.toLowerCase();
+    for (const item of tipsDatabase){
+      for (const kw of item.keywords){
+        if (input.includes(kw)) return item;
+      }
+    }
+    return null;
+  }
+
+  function imagesHTML(images){
+    if (!images || !images.length) return "";
+    return `<div class="msg-images">${images.map(img => `<img src="${img}" alt="Related screenshot">`).join("")}</div>`;
+  }
+
+  function searchTips(){
+    const input = document.getElementById("searchInput").value.trim();
+    const results = document.getElementById("searchResults");
+    results.innerHTML = "";
+    if (input === "") return;
+    const match = findMatch(input);
+    if (match){
+      results.innerHTML = `<div class="search-result-card">${match.answer}${imagesHTML(match.images).replace('msg-images','search-result-images')}</div>`;
+    } else {
+      results.innerHTML = `<div class="search-result-card">No matching tips found.<br><br>Try searching for: mesos, gear, union, link skills, or bossing.</div>`;
+    }
+  }
+
+  function respond(inputId, containerId){
+    const input = document.getElementById(inputId);
+    const message = input.value.trim();
+    if (message === "") return;
+    const messages = document.getElementById(containerId);
+    messages.insertAdjacentHTML('beforeend', `<div class="user-message">${message}</div>`);
+
+    const match = findMatch(message);
+    const reply = match ? match.answer : "I don't have a tip on that yet — try asking about mesos, gear, union, link skills, or bossing.";
+    const imgs = match ? imagesHTML(match.images) : "";
+    messages.insertAdjacentHTML('beforeend', `<div class="bot-message">${reply}${imgs}</div>`);
+    messages.scrollTop = messages.scrollHeight;
+    input.value = "";
+  }
+
+  function sendMessage(){ respond("chatInput", "chatMessages"); }
+  function sendFloatingMessage(){ respond("floatingChatInput", "floatingChatMessages"); }
+
+  function toggleFloatingChat(){
+    document.getElementById("floatingChatBox").classList.toggle("active");
+  }
 
   // Click-to-load YouTube embeds — avoids embed/config errors that can happen
   // when a page loads every iframe eagerly from a file:// or unexpected origin.
